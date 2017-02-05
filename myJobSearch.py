@@ -24,6 +24,7 @@ query = raw_input("What kind of job are you looking for? i.e. 'Software Engineer
 location = raw_input("Where do you want to work? i.e. 'San Francisco, Seattle, ...' ")
 radius = raw_input("How far (in miles) from the location are you willing to go? i.e. '50' ")
 excludeWords = raw_input("List any words that should not be in the job title and separate them with commas(case-sensitive): ")
+companyType = raw_input("Do you want to only show public companies? (True/False) ")
 #maxRes = raw_input("How many results would you like to see for each location? ")
 
 
@@ -41,37 +42,59 @@ print(json_content["totalResults"])
 
 totalres = (json_content["totalResults"])
 
-with open(query + ".csv", "a") as csvFile:
-	results = csv.writer(csvFile)
-	results.writerow(['Post Age', 'Date Created', 'Job Title', 'Company', 'Location', 'URL', 'Job Key'])
-	
-	for l in myLocs:
-		for num in range(0, 100, 10):
-			term = query.replace(' ', '+')
-			loc = l.replace(' ', '+')
-		
-			final_url = indeedUrl + '&q=' + term + '&radius=' + radius + '&l=' + loc + '&start=' + str(num)
-			json_obj = urllib2.urlopen(final_url)
-			data = json.load(json_obj)
-			print 'Complete '+ final_url
+def column(matrix, i):
+    return [row[i] for row in matrix]
 
-			for item in data['results']:
-				if any(lvl in item['jobtitle'].encode('utf-8') for lvl in exclude):	
-					continue
-				else:
-					results.writerow([item['formattedRelativeTime'].encode('utf-8'), item['date'].encode('utf-8'), item['jobtitle'].encode('utf-8'), item['company'].encode('utf-8'), item['formattedLocation'].encode('utf-8'), item['url'].encode('utf-8'), item['jobkey'].encode('utf-8')])
-	csvFile.close();
+with open(query + ".csv", "a") as csvFile:
+		with open('constituents.csv', 'rb') as f:
+			reader = csv.reader(f)
+			theList = list(reader)
+
+			results = csv.writer(csvFile)
+			#results.writerow(['Post Age', 'Date Created', 'Job Title', 'Company', 'Location', 'URL', 'Job Key'])
+			
+			for l in myLocs:
+				for num in range(0, 100, 10):
+					term = query.replace(' ', '+')
+					loc = l.replace(' ', '+')
+				
+					final_url = indeedUrl + '&q=' + term + '&radius=' + radius + '&l=' + loc + '&start=' + str(num)
+					json_obj = urllib2.urlopen(final_url)
+					data = json.load(json_obj)
+					print 'Complete '+ final_url
+
+					for item in data['results']:
+						if any(lvl in item['jobtitle'].encode('utf-8') for lvl in exclude):	
+							continue
+						elif(companyType == "True" or companyType == "true" or companyType =="t" or companyType =="T"):
+							if(item['company'].encode('utf-8') in column(theList, 1)):
+								results.writerow([item['formattedRelativeTime'].encode('utf-8'), item['date'].encode('utf-8'), item['jobtitle'].encode('utf-8'), item['company'].encode('utf-8'), item['formattedLocation'].encode('utf-8'), item['url'].encode('utf-8'), item['jobkey'].encode('utf-8')])
+						else:
+							results.writerow([item['formattedRelativeTime'].encode('utf-8'), item['date'].encode('utf-8'), item['jobtitle'].encode('utf-8'), item['company'].encode('utf-8'), item['formattedLocation'].encode('utf-8'), item['url'].encode('utf-8'), item['jobkey'].encode('utf-8')])
+		csvFile.close();
 
 with open(query + ".csv", "rb") as csvFile:
 	
 	f = open(query + ".html", "w")
-	table_string = "<table>"
+	table_string = "<table><tr><th>Post Age</th><th>Date Created</th><th>Job Title</th><th>Company</th><th>Location</th></tr>"
 	reader = csv.reader( csvFile )
 	for row in reader:
 		table_string += "<tr>" + \
-						"<td>" + \
-						string.join( row, "</td><td>" ) + \
-						"</td>" + \
+						"<td>" +\
+						row[0] + \
+						"</td><td>" + \
+						row[1] + \
+						"</td><td>" + \
+						"<a href='" + \
+						row[5]+ \
+						"'>" + \
+						row[2] + \
+						"</a>" + \
+						"</td><td>" + \
+						row[3] +\
+						"</td><td>" + \
+						row[4] + \
+						"</td><td></td>" + \
 						"</tr>\n"
 	table_string += "</table>"
 	    
