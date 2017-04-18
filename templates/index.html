@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head> 
+	<title>Job Search</title>
+</head>
+<body>
+	{% extends "layout.html" %}
+	{% block content %}
+	<div class="index">
+		<div class="jumbotron">
+		  	<h1>Job Search</h1>
+	    	<form class="navbar-form navbar-left" method="post">
+			  <div class="form-group">
+			  		<input type="text" name="job" class="form-control" placeholder="Job Title" value="{{request.form.job}}">
+			    	<input type="text" name ="location" class="form-control" placeholder="Location">
+			  		<input type="text" name="radius" class="form-control" placeholder="Radius">
+			    	<input type="text" name ="exclude" class="form-control" placeholder="Exclude">
+			  		<input type="text" name="companyType" class="form-control" placeholder="Company Type">
+			    
+			  </div>
+			  <button type="submit" class="btn btn-default">Submit</button>
+			</form>
+		</div>
+		
+	</div>
+	{% endblock %}
+    
+</body>
+</html>

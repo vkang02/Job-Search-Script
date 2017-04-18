@@ -17,4 +17,7 @@ query and location was inputted does not have any spaces and instead have '+' be
 indeed url formats it. We create a final url with the query, location, radius given by user, and a number. The number
 is just for keeping track of which result it is. We open the final url and then parse the json objects to a Python object.
 We loop through the data from the json object and make sure none of the words specified by the user is found in the job
-title before printing all the results. 
+title before adding it to a csv file containing the results. 
+
+An html file is created called the query plus .html. A table is written into the html file and the data from the csv file
+is stored into a table. The job title column is also a link to the job post from Indeed. 
